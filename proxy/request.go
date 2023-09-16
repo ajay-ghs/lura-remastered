@@ -33,7 +33,7 @@ func (r *Request) GeneratePath(URLPattern string) {
 		key = append(key, "}}"...)
 		buff = bytes.ReplaceAll(buff, key, []byte(v))
 	}
-	r.Path = string(buff)
+	r.Path = r.Path + string(buff)
 }
 
 // Clone clones itself into a new request. The returned cloned request is not
