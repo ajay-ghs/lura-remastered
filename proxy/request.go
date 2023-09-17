@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"io"
 	"net/url"
+	"strings"
 )
 
 // Request contains the data to send to the backend
@@ -33,7 +34,10 @@ func (r *Request) GeneratePath(URLPattern string) {
 		key = append(key, "}}"...)
 		buff = bytes.ReplaceAll(buff, key, []byte(v))
 	}
-	r.Path = r.Path + string(buff)
+
+	redirectionPath := string(buff)
+	redirectionPath = strings.TrimPrefix(redirectionPath, "/")
+	r.Path = r.Path + redirectionPath
 }
 
 // Clone clones itself into a new request. The returned cloned request is not
