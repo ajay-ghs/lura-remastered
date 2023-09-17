@@ -48,8 +48,11 @@ func CustomErrorEndpointHandler(logger logging.Logger, errF server.ToHTTPError) 
 			c.Header(core.KrakendHeaderName, core.KrakendHeaderValue)
 
 			response, err := prxy(requestCtx, requestGenerator(c, configuration.QueryString))
+			logger.Debug("Access-Control-Allow-Origin before ", c.Writer.Header().Get("Access-Control-Allow-Origin"))
 			origin := c.GetHeader("Origin")
 			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+			c.Writer.Header().Set("test", "value")
+			logger.Debug("Access-Control-Allow-Origin before ", c.Writer.Header().Get("Access-Control-Allow-Origin"))
 
 			select {
 			case <-requestCtx.Done():
