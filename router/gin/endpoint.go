@@ -52,7 +52,7 @@ func CustomErrorEndpointHandler(logger logging.Logger, errF server.ToHTTPError) 
 
 			origin := c.GetHeader("Origin")
 			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
-			if response.Metadata.Headers != nil {
+			if response != nil && response.Metadata.Headers != nil {
 				for k := range response.Metadata.Headers {
 					if k == "Access-Control-Allow-Origin" {
 						delete(response.Metadata.Headers, k)
