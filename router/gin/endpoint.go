@@ -5,6 +5,7 @@ package gin
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"net/textproto"
 
 	"github.com/gin-gonic/gin"
@@ -49,7 +50,6 @@ func CustomErrorEndpointHandler(logger logging.Logger, errF server.ToHTTPError) 
 
 			response, err := prxy(requestCtx, requestGenerator(c, configuration.QueryString))
 
-
 			origin := c.GetHeader("Origin")
 			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
 			if response != nil && response.Metadata.Headers != nil {
@@ -58,6 +58,11 @@ func CustomErrorEndpointHandler(logger logging.Logger, errF server.ToHTTPError) 
 						delete(response.Metadata.Headers, k)
 					}
 				}
+				res, err := ioutil.ReadAll(response.Io)
+				if err != nil {
+					fmt.Println("err ")
+				}
+				fmt.Println("res ", string(res))
 			}
 
 			select {
