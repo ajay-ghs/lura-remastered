@@ -48,6 +48,8 @@ func CustomErrorEndpointHandler(logger logging.Logger, errF server.ToHTTPError) 
 
 			origin := c.GetHeader("Origin")
 			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+			c.Writer.Header().Set("Content-Security-Policy", "default-src 'self'")
+			c.Writer.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
 			if response != nil && response.Metadata.Headers != nil {
 				for k := range response.Metadata.Headers {
 					if k == "Access-Control-Allow-Origin" {
