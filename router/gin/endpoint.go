@@ -5,13 +5,11 @@ package gin
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"net/textproto"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/luraproject/lura/v2/config"
-	"github.com/luraproject/lura/v2/core"
 	"github.com/luraproject/lura/v2/logging"
 	"github.com/luraproject/lura/v2/proxy"
 	"github.com/luraproject/lura/v2/transport/http/server"
@@ -46,8 +44,6 @@ func CustomErrorEndpointHandler(logger logging.Logger, errF server.ToHTTPError) 
 		return func(c *gin.Context) {
 			requestCtx, cancel := context.WithTimeout(c, configuration.Timeout)
 
-			c.Header(core.KrakendHeaderName, core.KrakendHeaderValue)
-
 			response, err := prxy(requestCtx, requestGenerator(c, configuration.QueryString))
 
 			origin := c.GetHeader("Origin")
@@ -58,11 +54,6 @@ func CustomErrorEndpointHandler(logger logging.Logger, errF server.ToHTTPError) 
 						delete(response.Metadata.Headers, k)
 					}
 				}
-				res, err := ioutil.ReadAll(response.Io)
-				if err != nil {
-					fmt.Println("err ")
-				}
-				fmt.Println("res ", string(res))
 			}
 
 			select {
@@ -73,11 +64,9 @@ func CustomErrorEndpointHandler(logger logging.Logger, errF server.ToHTTPError) 
 			default:
 			}
 
-			complete := server.HeaderIncompleteResponseValue
-
 			if response != nil && len(response.Data) > 0 {
 				if response.IsComplete {
-					complete = server.HeaderCompleteResponseValue
+
 					if isCacheEnabled {
 						c.Header("Cache-Control", cacheControlHeaderValue)
 					}
@@ -89,8 +78,6 @@ func CustomErrorEndpointHandler(logger logging.Logger, errF server.ToHTTPError) 
 					}
 				}
 			}
-
-			c.Header(server.CompleteResponseHeaderName, complete)
 
 			for _, err := range c.Errors {
 				logger.Error(logPrefix, err.Error())
